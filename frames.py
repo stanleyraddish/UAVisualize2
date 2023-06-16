@@ -36,6 +36,8 @@ class EditorFrame(Frame):
         self.predict_button = Button(self, text="Predict", command=self.predict)
         self.predict_button.place(relx=0.5, rely=0.75, anchor=CENTER)
 
+        self.metric_label = None
+
     def add_patch_from_file(self, file_path, movable=True):
         img = Image.open(file_path)
         img = img.convert("RGB")
@@ -91,6 +93,18 @@ class EditorFrame(Frame):
             cv2.imwrite("images/TEST.png", arr)
             arr = np.expand_dims(arr, axis=0) / 255
             y_pred = np.array(model.predict(arr))[:, :, 0]
-            print(y_pred)
+
+            if self.metric_label is not None:
+                self.metric_label.destroy()
+
+            var=StringVar()
+            self.metric_label = Label(self, textvariable=var)
+
+            steer = y_pred[0][0]
+            col = y_pred[1][0]
+            s = f"Steering Angle: {steer:.3f}, Collision Probability: {col:.3f}"
+
+            var.set(s)
+            self.metric_label.place(relx=0.5, rely=0.8, anchor=CENTER)
 
 

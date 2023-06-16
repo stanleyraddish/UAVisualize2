@@ -2,14 +2,14 @@ from app import *
 from img_utils import *
 
 def main():
-    app = App("images/x5-loc2.png")
+    app = App("images/test5.png")
 
     str_path = "model/model_struct.json"
     weight_path = "model/weights.h5"
     app.load_model(str_path, weight_path)
 
 
-    # app.current_frame.add_patch_from_file("images/jiggly.png")
+    app.current_frame.add_patch_from_file("images/patch3.png")
     # app.current_frame.add_patch_from_file("images/9.png")
     #
     # corners = [(60, 10), (20, 20), (50, 90), (100, 95)]
