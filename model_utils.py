@@ -1,4 +1,4 @@
-from keras.models import model_from_json, load_model
+from keras.models import model_from_json
 
 
 # Loads model from .json file for model struct and .h5 file for weights

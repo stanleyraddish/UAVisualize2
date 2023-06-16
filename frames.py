@@ -9,6 +9,9 @@ class EditorFrame(Frame):
         Frame.__init__(self, parent, width=width, height=height)
         self.pack_propagate(0)
 
+        self.parent = parent
+        self.controller = controller
+
         # Set up base image
         img = Image.open(base_img_file)
         self.screen_w, self.screen_h = img.size
@@ -29,6 +32,9 @@ class EditorFrame(Frame):
         # Buttons
         self.corner_button = Button(self, text="Select Corners", command=self.start_select_corners)
         self.corner_button.place(relx=0.5, rely=0.7, anchor=CENTER)
+
+        self.predict_button = Button(self, text="Predict", command=self.predict)
+        self.predict_button.place(relx=0.5, rely=0.75, anchor=CENTER)
 
     def add_patch_from_file(self, file_path, movable=True):
         img = Image.open(file_path)
@@ -66,5 +72,25 @@ class EditorFrame(Frame):
         if self.corner_count == 0:
             self.active_patch.recalculate_overlay(self.corner_list)
             self.clear_selection(None)
+
+    def generate_array(self):
+        arr = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.float32)
+        for patch in self.patches:
+            for o_y in range(patch.overlay_height):
+                for o_x in range(patch.overlay_width):
+                    if (o_x, o_y) in patch.overlay_quad_points:
+                        arr[o_y + patch.y, o_x + patch.x] = patch.overlay_array[o_y, o_x, :3]
+        return arr[:,:,::-1]
+
+    def predict(self):
+        if self.controller.model is None:
+            print("No model loaded")
+        else:
+            model = self.controller.model
+            arr = self.generate_array()
+            cv2.imwrite("images/TEST.png", arr)
+            arr = np.expand_dims(arr, axis=0) / 255
+            y_pred = np.array(model.predict(arr))[:, :, 0]
+            print(y_pred)
 
 
