@@ -9,8 +9,9 @@ def main():
     app.load_model(str_path, weight_path)
 
 
-    app.current_frame.add_patch_from_file("images/patch3.png")
-    # app.current_frame.add_patch_from_file("images/9.png")
+    app.add_patch("images/patch3.png")
+    app.add_patch("images/patch2.png")
+    # app.current_frame.add_patch_from_file("images/jiggly.png")
     #
     # corners = [(60, 10), (20, 20), (50, 90), (100, 95)]
     # corners = [(y, x) for (x, y) in corners]

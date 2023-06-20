@@ -83,9 +83,21 @@ class Patch:
         dy = event.y - self.prev_mouse_Y
         self.prev_mouse_X = event.x
         self.prev_mouse_Y = event.y
-        self.x += dx
-        self.y += dy
-        self.parent.move(self.tag, dx, dy)
+        if self.in_bounds(self.x + dx, self.y + dy):
+            self.x += dx
+            self.y += dy
+            self.parent.move(self.tag, dx, dy)
+
+    def in_bounds(self, x, y):
+        if x < 0:
+            return False
+        if y < 0:
+            return False
+        if x + self.overlay_width >= self.parent.winfo_width():
+            return False
+        if y + self.overlay_height >= self.parent.winfo_height():
+            return False
+        return True
 
     def get_frame(self):
         return self.parent.master.master

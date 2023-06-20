@@ -28,3 +28,7 @@ class App:
 
     def load_model(self, struct_path, weights_path):
         self.model = load_network_from_json_and_h5(struct_path, weights_path)
+
+    def add_patch(self, img_file):
+        if isinstance(self.current_frame, EditorFrame):
+            self.current_frame.add_patch_from_file(img_file)

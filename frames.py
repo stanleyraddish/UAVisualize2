@@ -20,8 +20,8 @@ class EditorFrame(Frame):
         self.border = Canvas(self, width=self.screen_w+4, height=self.screen_h+4, highlightthickness=2, highlightbackground="black")
         self.border.pack(pady=0)
 
-        self.canvas = Canvas(self.border, width=self.screen_w, height=self.screen_h)
-        self.canvas.place(x=2, y=2, anchor=NW)
+        self.canvas = Canvas(self.border, width=self.screen_w, height=self.screen_h, highlightthickness=0)
+        self.canvas.place(relx=0.5, rely=0.5, anchor=CENTER)
         self.master.bind("<Escape>", self.clear_selection)
 
         self.patches = []
@@ -88,10 +88,13 @@ class EditorFrame(Frame):
         if self.controller.model is None:
             print("No model loaded")
         else:
+            self.clear_selection(None)
+
             model = self.controller.model
             arr = self.generate_array()
             cv2.imwrite("images/TEST.png", arr)
             arr = np.expand_dims(arr, axis=0) / 255
+
             y_pred = np.array(model.predict(arr))[:, :, 0]
 
             if self.metric_label is not None:
