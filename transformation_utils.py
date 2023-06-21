@@ -12,9 +12,9 @@ def get_bounds(points):
 def in_triangle(x, y, triangle_corners):
     point = Point(x, y)
     poly = Polygon(triangle_corners)
-    return point.within(poly)
+    return poly.intersects(point)
 
-def find_patch_point(patch_size, corners, patch_point):
+def find_patch_point(patch_size, corners, img_point):
     # (Note: First corner is bottom left and then move clockwise around quadrilateral)
 
     # Corner points of quadrilateral
@@ -38,7 +38,7 @@ def find_patch_point(patch_size, corners, patch_point):
     pcenter_x = (patch_w - 1) / 2
     pcenter_y = (patch_h - 1) / 2
 
-    x, y = patch_point[0], patch_point[1]
+    x, y = img_point[0], img_point[1]
 
     # Determine which triangular quadrant the point lies in
     for i in range(4):
@@ -90,3 +90,43 @@ def find_convex(c_x, c_y, l_x, l_y, r_x, r_y, x, y):
 
     # convex combination for center, left, right
     return s, p * t, q * t
+
+def quad_to_quad(patch_corners, corners_to, point, patch_size):
+    # (Note: First corner is bottom left and then move clockwise around quadrilateral)
+    (patch_h, patch_w) = patch_size
+
+    # Corner points of quadrilateral
+    (q1_x, q1_y) = corners_to[0]
+    (q2_x, q2_y) = corners_to[1]
+    (q3_x, q3_y) = corners_to[2]
+    (q4_x, q4_y) = corners_to[3]
+
+    (p1_x, p1_y) = patch_corners[0]
+    (p2_x, p2_y) = patch_corners[1]
+    (p3_x, p3_y) = patch_corners[2]
+    (p4_x, p4_y) = patch_corners[3]
+
+    qcenter_x = (q1_x + q2_x + q3_x + q4_x) / 4
+    qcenter_y = (q1_y + q2_y + q3_y + q4_y) / 4
+
+    pcenter_x = (p1_x + p2_x + p3_x + p4_x) / 4
+    pcenter_y = (p1_y + p2_y + p3_y + p4_y) / 4
+
+    x, y = point[0], point[1]
+
+    # Determine which triangular quadrant the point lies in
+    for i in range(4):
+        left_corner = corners_to[i % 4]
+        right_corner = corners_to[(i + 1) % 4]
+        if in_triangle(x, y, [(qcenter_x, qcenter_y), left_corner, right_corner]):
+            break
+
+    patch_left_corner = patch_corners[i % 4]
+    patch_right_corner = patch_corners[(i + 1) % 4]
+
+    a, b, c = find_convex(qcenter_x, qcenter_y, left_corner[0], left_corner[1], right_corner[0], right_corner[1], x, y)
+
+    res_x = int(a * pcenter_x + b * patch_left_corner[0] + c * patch_right_corner[0])
+    res_y = int(a * pcenter_y + b * patch_left_corner[1] + c * patch_right_corner[1])
+
+    return np.clip(res_x, 0, patch_w - 1), np.clip(res_y, 0, patch_h - 1)

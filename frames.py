@@ -36,6 +36,12 @@ class EditorFrame(Frame):
         self.predict_button = Button(self, text="Predict", command=self.predict)
         self.predict_button.place(relx=0.5, rely=0.75, anchor=CENTER)
 
+        self.delete_button = Button(self, text="Delete", command=self.delete_patch)
+        self.delete_button.place(relx=0.5, rely=0.8, anchor=CENTER)
+
+        self.attack_button = Button(self, text="Attack", command=self.start_attack)
+        self.attack_button.place(relx=0.5, rely=0.85, anchor=CENTER)
+
         self.metric_label = None
 
     def add_patch_from_file(self, file_path, movable=True):
@@ -54,6 +60,7 @@ class EditorFrame(Frame):
     def clear_selection(self, event):
         self.active_patch = None
         self.master.unbind("<a>")
+        self.master.unbind("<s>")
         for p in self.patches[1:]:
             p.draw()
 
@@ -108,6 +115,30 @@ class EditorFrame(Frame):
             s = f"Steering Angle: {steer:.3f}, Collision Probability: {col:.3f}"
 
             var.set(s)
-            self.metric_label.place(relx=0.5, rely=0.8, anchor=CENTER)
+            self.metric_label.place(relx=0.5, rely=0.6, anchor=CENTER)
+
+    def delete_patch(self):
+        if self.active_patch != None:
+            self.canvas.delete(self.active_patch.tag)
+            self.patches.remove(self.active_patch)
+            self.clear_selection(None)
+
+    def start_attack(self):
+        self.atk_corner_count = 4
+        self.atk_corner_list = []
+        self.master.bind("<s>", self.select_atk_corners)
+
+    def select_atk_corners(self, event):
+        print("Attack Corner selected")
+        x = self.canvas.winfo_pointerx() - self.canvas.winfo_rootx()
+        y = self.canvas.winfo_pointery() - self.canvas.winfo_rooty()
+        self.atk_corner_list.append((x, y))
+        print(x, y)
+
+        self.atk_corner_count -= 1
+        if self.atk_corner_count == 0:
+            patch = QuadAttackPatch(self.atk_corner_list, self.canvas, True, self.controller.model)
+            self.patches.append(patch)
+            self.clear_selection(None)
 
 
