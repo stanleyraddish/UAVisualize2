@@ -4,12 +4,10 @@ from math_utils import *
 from transformation_utils import *
 from img_utils import *
 from losses import *
-
 from shapely import Point, Polygon
 from tkinter import *
 from PIL import Image, ImageTk
 import tensorflow as tf
-
 
 class Patch:
     # @param{np.array[float[0,255]]} base_array: dimension h x w x 3
@@ -195,7 +193,7 @@ class QuadAttackPatch(Patch):
 
         return overlay, xmin, ymin, overlay_quad_points
 
-    def quadPGD(self, model, arr, img_quad_points, loss_func=multi_right_loss, epochs=1000, eps=2):
+    def quadPGD(self, model, arr, img_quad_points, loss_func=multi_right_loss, epochs=100, eps=30):
         patch = np.zeros(arr.shape)
 
         for step in range(epochs):

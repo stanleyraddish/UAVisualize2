@@ -1,8 +1,8 @@
 from tkinter import *
 import numpy as np
-
 from img_utils import *
 from patch import *
+
 
 class EditorFrame(Frame):
     def __init__(self, parent, controller, base_img_file, width, height):

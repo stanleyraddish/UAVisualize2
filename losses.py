@@ -35,3 +35,7 @@ def threshold_collide_right_loss(y_true, y_pred):
 def linear_threshold_collide_right_loss(y_true, y_pred):
     res = -tf.reduce_sum(y_pred[0]) - tf.reduce_sum(tf.nn.relu(y_pred[1] - 0.3))
     return res
+
+def stop_loss(y_true, y_pred):
+    res = tf.reduce_sum(-tf.math.square(1 - y_pred[1]))
+    return res

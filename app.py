@@ -7,6 +7,7 @@ class App:
     def __init__(self, base_img_file, w=600, h=600):
         self.win_w = w
         self.win_h = h
+
         self.base_img_file = base_img_file
         self.initialize_app()
 
@@ -23,12 +24,12 @@ class App:
     def show_frame(self, frame):
         frame.tkraise()
 
-    def run(self):
-        self.root.mainloop()
-
     def load_model(self, struct_path, weights_path):
         self.model = load_network_from_json_and_h5(struct_path, weights_path)
 
     def add_patch(self, img_file):
         if isinstance(self.current_frame, EditorFrame):
             self.current_frame.add_patch_from_file(img_file)
+
+    def run(self):
+        self.root.mainloop()
